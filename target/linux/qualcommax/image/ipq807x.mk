@@ -1,5 +1,5 @@
 DTS_DIR := $(DTS_DIR)/qcom
-DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_HW_ID TPLINK_SUPPORT_STRING ZYXEL_MODEL_ID
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_HW_ID TPLINK_SUPPORT_STRING ZYXEL_MODEL_IDS
 
 define Build/asus-fake-ramdisk
 	rm -rf $(KDIR)/tmp/fakerd
@@ -47,7 +47,7 @@ endef
 
 define Build/zyxel-nwax10ax-fit
 	$(TOPDIR)/scripts/mkits-zyxel-fit-filogic.sh \
-		$@.its $@ "$(ZYXEL_MODEL_ID) ff ff ff ff ff ff ff ff"
+		$@.its $@ "$(ZYXEL_MODEL_IDS) ff ff ff ff ff ff"
 	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
 	@mv $@.new $@
 endef
@@ -609,29 +609,33 @@ define Device/zyxel_nwax10ax_common
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := Zyxel
+	DEVICE_ALT0_VENDOR := Zyxel
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	IMAGE_SIZE := 61440k
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE) | zyxel-nwax10ax-fit
+	DEVICE_PACKAGES := zyxel-bootconfig-ipq807x kmod-leds-lp5562
 endef
 
 define Device/zyxel_nwa110ax
 	$(call Device/zyxel_nwax10ax_common)
 	DEVICE_MODEL := NWA110AX
+	DEVICE_ALT0_MODEL := WAX510D
 	DEVICE_DTS_CONFIG := config@ac01
 	SOC := ipq8070
-	DEVICE_PACKAGES := ipq-wifi-zyxel_nwa110ax zyxel-bootconfig-ipq807x kmod-leds-lp5562
-	ZYXEL_MODEL_ID := 59 e1
+	DEVICE_PACKAGES += ipq-wifi-zyxel_nwa110ax
+	ZYXEL_MODEL_IDS := 59 e1 56 e1
 endef
 TARGET_DEVICES += zyxel_nwa110ax
 
 define Device/zyxel_nwa210ax
 	$(call Device/zyxel_nwax10ax_common)
 	DEVICE_MODEL := NWA210AX
+	DEVICE_ALT0_MODEL := WAX610D
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-zyxel_nwa210ax zyxel-bootconfig-ipq807x kmod-leds-lp5562
-	ZYXEL_MODEL_ID := 5c e1
+	DEVICE_PACKAGES += ipq-wifi-zyxel_nwa210ax
+	ZYXEL_MODEL_IDS := 5c e1 5b e1
 endef
 TARGET_DEVICES += zyxel_nwa210ax
